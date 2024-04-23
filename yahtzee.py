@@ -146,6 +146,9 @@ def main():
     winner = None
     for player, scores in player_scores.items():
         total_score = sum(scores.values())
+        # give bonus points for a total score of 63 or more in the upper section
+        if sum(scores.get(category, 0) for category in ["ones", "twos", "threes", "fours", "fives", "sixes"]) >= 63:
+            total_score += 35
         print(f"Player {player}: {total_score}")
         if total_score > max_score:
             max_score = total_score

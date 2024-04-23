@@ -12,5 +12,3 @@ def analyze_and_visualize(df):
     plt.xlabel('Category')
     plt.ylabel('Average Score')
     plt.show()
-
-    # More analyses can be added here

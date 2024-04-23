@@ -1,32 +1,66 @@
 import pandas as pd # for data analysis
 import matplotlib.pyplot as plt # for simulation analysis visualization
+import random # for dice rolling simulation
 
+# aggressive strategy focuses on maximizing the score
 def aggressive_strategy(dice):
-    # Example implementation: focuses on Yahtzee or large straight
     counts = [dice.count(i) for i in range(1, 7)]
-    if 5 in counts:
-        return 'yahtzee'
-    elif all(i in dice for i in [1, 2, 3, 4, 5]) or all(i in dice for i in [2, 3, 4, 5, 6]):
-        return 'large_straight'
+    max_count = max(counts)
+    chosen_number = counts.index(max_count) + 1
+    indices_to_reroll = [i for i, x in enumerate(dice) if x != chosen_number]
+
+    # Focus on Yahtzee or largest available multiple
+    if max_count == 5:
+        return 'yahtzee', []
+    elif max_count >= 3:
+        if max_count == 4:
+            return 'four_of_a_kind', indices_to_reroll
+        else:
+            return 'three_of_a_kind', indices_to_reroll
     else:
-        return 'chance'  # Default to chance if high-score categories are not possible
-
+        # Check for potential straights
+        sorted_dice = sorted(dice)
+        if all(x in sorted_dice for x in [2, 3, 4, 5]):  # Check for middle straight
+            return 'large_straight', [i for i, x in enumerate(dice) if x not in [2, 3, 4, 5]]
+        elif all(x in sorted_dice for x in [1, 2, 3, 4, 5]):
+            return 'large_straight', []
+        elif all(x in sorted_dice for x in [2, 3, 4, 5, 6]):
+            return 'large_straight', []
+        else:
+            # Default to rerolling all except the highest number for a possible better combination
+            return 'chance', indices_to_reroll
+        
+# conservative strategy focuses on minimizing the risk while getting points
 def conservative_strategy(dice):
-    # Example implementation: opts for guaranteed scores like ones, twos, etc.
     counts = [dice.count(i) for i in range(1, 7)]
-    for i in range(6, 0, -1):  # Check from sixes to ones
-        if counts[i-1] > 0:
-            return ['sixes', 'fives', 'fours', 'threes', 'twos', 'ones'][i-1]
-    return 'chance'
+    preferred_score = max(counts) * (counts.index(max(counts)) + 1)
+    # Aim for the highest count number
+    chosen_number = counts.index(max(counts)) + 1
+    indices_to_reroll = [i for i, x in enumerate(dice) if x != chosen_number]
 
-def random_strategy(dice):
-    import random
+    # Choose the safest category based on the highest count
+    if counts[chosen_number - 1] >= 3:
+        if counts[chosen_number - 1] == 3:
+            return 'three_of_a_kind', indices_to_reroll
+        elif counts[chosen_number - 1] == 4:
+            return 'four_of_a_kind', indices_to_reroll
+        else:
+            return 'yahtzee', []
+    else:
+        return ['ones', 'twos', 'threes', 'fours', 'fives', 'sixes'][chosen_number - 1], indices_to_reroll
+
+def random_strategy(dice, roll_number):
     categories = [
-        "chance", "yahtzee", "ones", "twos", "threes", "fours", 
-        "fives", "sixes", "three_of_a_kind", "four_of_a_kind", 
+        "chance", "yahtzee", "ones", "twos", "threes", "fours",
+        "fives", "sixes", "three_of_a_kind", "four_of_a_kind",
         "full_house", "small_straight", "large_straight"
     ]
-    return random.choice(categories)
+    category = random.choice(categories)
+    if roll_number < 3:
+        indices_to_reroll = random.sample(range(5), random.randint(0, 5))  # More likely to reroll more dice
+    else:
+        indices_to_reroll = random.sample(range(5), random.randint(0, 2))  # Fewer rerolls on the last roll
+    return category, indices_to_reroll
 
 def choose_strategy(player, strategies):
     if player in strategies:
