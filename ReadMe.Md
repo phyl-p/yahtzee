@@ -5,19 +5,20 @@ This ReadMe file provides instructions on how to run the code for the Yahtzee ga
 ## Prerequisites
 
 Before running the code, make sure you have the following prerequisites installed:
-
-- [Programming language runtime](link-to-runtime) - The code is written in [programming language], so you need to have the corresponding runtime installed on your machine.
+1. python3
+2. pandas
+4. matplotlib.pyplot
 
 ## Installation
 
 To install the code, follow these steps:
 
-1. Clone the repository: `git clone https://github.com/your-repo.git`
-2. Navigate to the project directory: `cd your-repo`
-3. Install dependencies: `npm install` or `pip install -r requirements.txt` (depending on the programming language)
+1. Clone the repository: `git clone https://github.com/phyl-p/yahtzee.git`
+2. Navigate to the project directory: `cd your_file_path_to/yahtzee`
+3. Install dependencies: `npm install` or `pip install -r requirements.txt`
 
 ## Running the Code
 
 To run the code, execute the following command:
-
+python3 yahtzee.py
 ```bash
