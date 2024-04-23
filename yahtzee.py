@@ -88,7 +88,21 @@ def main():
     results = []  # List to store game data for analysis
 
     player_scores = {} # dictionary to store the scores for each player
+    game_mode = int(input("Choose Game Mode: Simulation 1, Player 2): "))
+    #check if the game mode is valid    
+    while game_mode not in [1, 2]:
+        print("Invalid game mode. Try again.")
+        game_mode = int(input("Choose Game Mode: Simulation 1, Player 2): "))
+        
     num_players = int(input("Enter number of players: ")) # allow multiple players
+
+    if game_mode == 1:
+        # assign a strategy to each player
+        strategies = {}
+        for player in range(1, num_players + 1):
+            strategy = input(f"Enter strategy for player {player} (random, conservative, or aggressive): ").strip().lower()
+            strategies[player] = strategy
+
     for i in range(1, num_players + 1): # initialize scores for each player
         player_scores[i] = {} # a dictionary within the player_scores dictionary
 
@@ -100,24 +114,38 @@ def main():
             dice = roll_dice(5) # roll 5 dice
             print("First roll: ", dice)
             # Allow the player to reroll the dice twice
-            for roll in range(2):
-                reroll = input("Enter indices (1-5) of dice to reroll (comma separated, empty if none): ")
-                if reroll.strip():
-                    indices = list(map(int, reroll.split(',')))
-                    #check if the indices are valid
-                    while any(i < 1 or i > 5 for i in indices):
-                        print("Invalid index. Try again.")
-                        reroll = input("Enter indices (1-6) of dice to reroll (comma separated, empty if none): ")
-                        if reroll.strip():
-                            indices = list(map(int, reroll.split(',')))
-                        continue
-                    new_dice = roll_dice(len(indices))
-                    for index, new_die in zip(indices, new_dice):
-                        dice[index-1] = new_die
-                print(f"Roll {roll + 2}: ", dice)
-            
-            # Ask the player to choose a category and calculate the score
-            category = get_category_input()
+
+            # Simulation Mode
+            if game_mode == 1:
+                strategy_func = simulation.choose_strategy(player, strategies) # choose the strategy function based on the player's strategy
+                for roll in range(3):
+                    category, reroll_indices = strategy_func(dice, roll + 1)
+                    if reroll_indices:
+                        new_dice = roll_dice(len(reroll_indices))
+                        for index, new_die in zip(reroll_indices, new_dice):
+                            dice[index] = new_die
+                    if roll == 2 or not reroll_indices:  # No rerolls or last roll
+                        break
+            else:
+                # Player Mode
+                for roll in range(2):
+                    reroll = input("Enter indices (1-5) of dice to reroll (comma separated, empty if none): ")
+                    if reroll.strip():
+                        indices = list(map(int, reroll.split(',')))
+                        #check if the indices are valid
+                        while any(i < 1 or i > 5 for i in indices):
+                            print("Invalid index. Try again.")
+                            reroll = input("Enter indices (1-6) of dice to reroll (comma separated, empty if none): ")
+                            if reroll.strip():
+                                indices = list(map(int, reroll.split(',')))
+                            continue
+                        new_dice = roll_dice(len(indices))
+                        for index, new_die in zip(indices, new_dice):
+                            dice[index-1] = new_die
+                    print(f"Roll {roll + 2}: ", dice)
+                
+                # Ask the player to choose a category and calculate the score
+                category = get_category_input()
             score = calculate_score(category, dice)
             player_scores[player][category] = score
            
