@@ -93,7 +93,7 @@ def main():
     while game_mode not in [1, 2]:
         print("Invalid game mode. Try again.")
         game_mode = int(input("Choose Game Mode: Simulation 1, Player 2): "))
-        
+
     num_players = int(input("Enter number of players: ")) # allow multiple players
 
     if game_mode == 1:
@@ -117,15 +117,15 @@ def main():
 
             # Simulation Mode
             if game_mode == 1:
-                strategy_func = simulation.choose_strategy(player, strategies) # choose the strategy function based on the player's strategy
                 for roll in range(3):
-                    category, reroll_indices = strategy_func(dice, roll + 1)
-                    if reroll_indices:
+                    strategy_func = simulation.choose_strategy(player, strategies) # choose the strategy function based on the player's strategy
+                    category, reroll_indices, continue_rolling = strategy_func(dice, roll + 1) # get the category, indices to reroll, and whether to continue rolling
+                    if not continue_rolling:
+                        break  # Stop rerolling and score in the chosen category
+                    elif reroll_indices:
                         new_dice = roll_dice(len(reroll_indices))
                         for index, new_die in zip(reroll_indices, new_dice):
                             dice[index] = new_die
-                    if roll == 2 or not reroll_indices:  # No rerolls or last roll
-                        break
             else:
                 # Player Mode
                 for roll in range(2):
