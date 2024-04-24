@@ -21,4 +21,9 @@ To install the code, follow these steps:
 
 To run the code, execute the following command:
 python3 yahtzee.py
+
+## Making Modifications to Strategies
+
+The strategies included in this program are fairly elementary. To implement and simulate your own strategy, go to the simulation.py file to add your own strategy and include the strategy funciton option in the main() function as well as the choose_strategy() function. 
 ```bash
+
